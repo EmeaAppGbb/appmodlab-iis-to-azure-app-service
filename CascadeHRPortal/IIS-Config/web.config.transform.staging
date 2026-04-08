@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web.config transform for Staging environment -->
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <location>
+    <system.webServer>
+      <aspNetCore stdoutLogEnabled="true" xdt:Transform="SetAttributes(stdoutLogEnabled)">
+        <environmentVariables>
+          <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Staging" xdt:Transform="SetAttributes(value)" xdt:Locator="Match(name)" />
+        </environmentVariables>
+      </aspNetCore>
+    </system.webServer>
+  </location>
+  <connectionStrings>
+    <add name="HRDatabase" connectionString="Server=sql-cascade-hr-staging.cascade.local;Database=CascadeHR_Staging;Integrated Security=true;" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+  </connectionStrings>
+</configuration>

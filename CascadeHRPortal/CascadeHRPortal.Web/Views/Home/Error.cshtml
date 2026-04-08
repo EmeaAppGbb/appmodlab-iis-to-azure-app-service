@@ -1,0 +1,6 @@
+@{ ViewData["Title"] = "Error"; }
+<div class="error-page">
+    <h1>Error @ViewBag.StatusCode</h1>
+    <p>@ViewBag.ErrorMessage</p>
+    <p><a asp-controller="Home" asp-action="Index">Return to Home</a></p>
+</div>

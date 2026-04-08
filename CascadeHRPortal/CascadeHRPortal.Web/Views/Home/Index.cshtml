@@ -1,0 +1,20 @@
+@{ ViewData["Title"] = "Home"; }
+<div class="home-page">
+    <h1>@ViewBag.WelcomeMessage</h1>
+    <div class="dashboard">
+        <div class="card">
+            <h3>Quick Actions</h3>
+            <ul>
+                <li><a asp-controller="Leave" asp-action="Request">Submit Leave Request</a></li>
+                <li><a asp-controller="Timesheet" asp-action="Submit">Submit Timesheet</a></li>
+                <li><a asp-controller="Payslip" asp-action="Index">View Payslips</a></li>
+                <li><a asp-controller="Benefits" asp-action="Enroll">Enroll in Benefits</a></li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3>Announcements</h3>
+            <p>Welcome to the Cascade HR Portal. This is your one-stop destination for all HR tasks.</p>
+            <p><strong>Note:</strong> IIS-hosted with Windows Authentication.</p>
+        </div>
+    </div>
+</div>

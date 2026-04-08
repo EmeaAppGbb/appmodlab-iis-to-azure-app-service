@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cascade HR Portal</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a class="navbar-brand" href="/">Cascade HR Portal</a>
+                <div class="navbar-nav">
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="nav-link" asp-controller="Leave" asp-action="Index">Leave</a>
+                    <a class="nav-link" asp-controller="Timesheet" asp-action="Index">Timesheets</a>
+                    <a class="nav-link" asp-controller="Payslip" asp-action="Index">Payslips</a>
+                    <a class="nav-link" asp-controller="Benefits" asp-action="Index">Benefits</a>
+                    <a class="nav-link" asp-controller="Directory" asp-action="Index">Directory</a>
+                    <a class="nav-link" asp-controller="Profile" asp-action="Index">Profile</a>
+                </div>
+                <div class="user-info">@(User.Identity?.IsAuthenticated == true ? User.Identity.Name : "")</div>
+            </div>
+        </nav>
+    </header>
+    <div class="container main-content">
+        @if (TempData["SuccessMessage"] != null) {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+        @if (TempData["ErrorMessage"] != null) {
+            <div class="alert alert-error">@TempData["ErrorMessage"]</div>
+        }
+        <main role="main">@RenderBody()</main>
+    </div>
+    <footer><div class="container">&copy; 2024 Cascade Human Resources</div></footer>
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

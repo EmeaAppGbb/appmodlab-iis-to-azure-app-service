@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web.config transform for Production environment -->
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+  <location>
+    <system.webServer>
+      <aspNetCore stdoutLogEnabled="false" xdt:Transform="SetAttributes(stdoutLogEnabled)">
+        <environmentVariables>
+          <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Production" xdt:Transform="SetAttributes(value)" xdt:Locator="Match(name)" />
+        </environmentVariables>
+      </aspNetCore>
+      <httpErrors errorMode="DetailedLocalOnly" xdt:Transform="SetAttributes(errorMode)" />
+    </system.webServer>
+  </location>
+  <connectionStrings>
+    <add name="HRDatabase" connectionString="Server=sql-cascade-hr-prod.cascade.local;Database=CascadeHR;Integrated Security=true;" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+  </connectionStrings>
+</configuration>

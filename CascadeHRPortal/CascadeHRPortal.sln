@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CascadeHRPortal.Web", "CascadeHRPortal.Web\CascadeHRPortal.Web.csproj", "{8F6B4F2C-1A3D-4E5B-9C7D-2A8E3F4B5C6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CascadeHRPortal.Services", "CascadeHRPortal.Services\CascadeHRPortal.Services.csproj", "{9G7C5G3D-2B4E-5F6C-AD8E-3B9F4G5C6D7E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F6B4F2C-1A3D-4E5B-9C7D-2A8E3F4B5C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F6B4F2C-1A3D-4E5B-9C7D-2A8E3F4B5C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F6B4F2C-1A3D-4E5B-9C7D-2A8E3F4B5C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F6B4F2C-1A3D-4E5B-9C7D-2A8E3F4B5C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9G7C5G3D-2B4E-5F6C-AD8E-3B9F4G5C6D7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9G7C5G3D-2B4E-5F6C-AD8E-3B9F4G5C6D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9G7C5G3D-2B4E-5F6C-AD8E-3B9F4G5C6D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9G7C5G3D-2B4E-5F6C-AD8E-3B9F4G5C6D7E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

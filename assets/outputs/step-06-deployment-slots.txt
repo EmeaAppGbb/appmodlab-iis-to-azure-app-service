@@ -1,0 +1,94 @@
+ÔùÅ List directory .
+  Ôöö 8 files found
+
+ÔùÅ Search (glob)
+  Ôöé "**/*.sln"
+  Ôöö 1 file found
+
+ÔùÅ Search (glob)
+  Ôöé "**/*.csproj"
+  Ôöö 2 files found
+
+ÔùÅ List directory CascadeHRPortal
+  Ôöö 5 files found
+
+ÔùÅ Read CascadeHRPortal.Web.csproj
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+  Ôöö 21 lines read
+
+ÔùÅ Search (glob)
+  Ôöé ".github/**/*"
+  Ôöö No matches found
+
+ÔùÅ List directory infra
+  Ôöö 3 files found
+
+ÔùÅ Read main.bicep
+  Ôöé infra\main.bicep
+  Ôöö 165 lines read
+
+ÔùÅ Read parameters.json
+  Ôöé infra\parameters.json
+  Ôöö 18 lines read
+
+ÔùÅ List directory infra\modules
+  Ôöö 4 files found
+
+ÔùÅ Read app-service.bicep
+  Ôöé infra\modules\app-service.bicep
+  Ôöö 162 lines read
+
+Now I have a clear picture of the project. Let me create both files.
+
+ÔùÅ Create directories for workflow and scripts (shell)
+  Ôöé New-Item -ItemType Directory -Path ".github\workflows" -Force | Out-Null;
+  Ôöé New-Item -ItemType Directory -Path "scripts" -Force | Out-Null; Write-Output
+  Ôöé "Done"
+  Ôöö 2 lines...
+
+ÔùÅ Create deploy.yml +121
+  Ôöö .github\workflows\deploy.yml
+
+ÔùÅ Create swap-slots.ps1 +115
+  Ôöö scripts\swap-slots.ps1
+
+Let me validate the YAML syntax:
+
+ÔùÅ Validate YAML syntax (shell)
+  Ôöé python -c "import yaml;
+  Ôöé yaml.safe_load(open('.github/workflows/deploy.yml')); print('YAML is
+  Ôöé valid')"
+  Ôöö 2 lines...
+
+ÔùÅ Validate PowerShell syntax (shell)
+  Ôöé pwsh -NoProfile -Command "& { try { . .\scripts\swap-slots.ps1 } catch {
+  Ôöé Write-Host 'Parse OK (param errors expected without args)' } }" 2>&1 |
+  Ôöé Select-Object -First 3
+  Ôöö 4 lines...
+
+ÔùÅ Stop shell
+  Ôöö 1 line...
+
+Good ÔÇö both files are syntactically valid (the PS1 parsed and prompted for required params). Let me verify no commits were made:
+
+ÔùÅ Verify files are uncommitted (shell)
+  Ôöé git --no-pager status --short
+  Ôöö 4 lines...
+
+Both files are created and **not committed**. Here's what was set up:
+
+### `.github/workflows/deploy.yml`
+- **Triggers** on push to `main`
+- **build** job: restores, builds, and publishes the ASP.NET Core app (net6.0) as an artifact
+- **deploy-staging** job: authenticates via OIDC (`azure/login@v2` with federated credentials), deploys to the `staging` slot using `azure/webapps-deploy@v3`, then verifies health
+- **swap-to-production** job: requires manual approval via `environment: production`, then runs the swap script
+
+### `scripts/swap-slots.ps1`
+- Pre-swap health check on the staging slot (retries up to 10 times)
+- Executes `az webapp deployment slot swap` to swap staging ÔåÆ production
+- Post-swap health check on production with rollback guidance if it fails
+
+
+Changes   +236 -0
+Requests  3 Premium (2m 8s)
+Tokens    Ôåæ 329.3k ÔÇó Ôåô 4.1k ÔÇó 300.4k (cached)

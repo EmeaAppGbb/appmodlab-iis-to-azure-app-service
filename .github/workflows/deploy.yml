@@ -1,0 +1,120 @@
+name: Build and Deploy CascadeHRPortal
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  DOTNET_VERSION: '6.0.x'
+  APP_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
+  RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+  SLOT_NAME: staging
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Build & Publish
+  # ──────────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore CascadeHRPortal/CascadeHRPortal.sln
+
+      - name: Build
+        run: dotnet build CascadeHRPortal/CascadeHRPortal.sln --configuration Release --no-restore
+
+      - name: Publish
+        run: |
+          dotnet publish CascadeHRPortal/CascadeHRPortal.Web/CascadeHRPortal.Web.csproj \
+            --configuration Release \
+            --no-build \
+            --output ${{ github.workspace }}/publish
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp-package
+          path: ${{ github.workspace }}/publish
+          retention-days: 3
+
+  # ──────────────────────────────────────────────
+  # Deploy to Staging Slot
+  # ──────────────────────────────────────────────
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: staging
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: webapp-package
+          path: ./publish
+
+      - name: Login to Azure via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to staging slot
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.APP_NAME }}
+          slot-name: ${{ env.SLOT_NAME }}
+          package: ./publish
+
+      - name: Verify staging deployment
+        run: |
+          STAGING_URL="https://${APP_NAME}-${SLOT_NAME}.azurewebsites.net"
+          echo "Checking staging health at $STAGING_URL..."
+          for i in $(seq 1 10); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$STAGING_URL" --max-time 10 || echo "000")
+            if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 400 ]; then
+              echo "Staging is healthy (HTTP $STATUS)"
+              exit 0
+            fi
+            echo "Attempt $i: HTTP $STATUS - retrying in 15s..."
+            sleep 15
+          done
+          echo "::error::Staging health check failed after 10 attempts"
+          exit 1
+
+  # ──────────────────────────────────────────────
+  # Swap Staging → Production (manual approval)
+  # ──────────────────────────────────────────────
+  swap-to-production:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Azure via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Swap staging slot to production
+        shell: pwsh
+        run: ./scripts/swap-slots.ps1 -AppName "${{ env.APP_NAME }}" -ResourceGroup "${{ env.RESOURCE_GROUP }}" -SlotName "${{ env.SLOT_NAME }}"

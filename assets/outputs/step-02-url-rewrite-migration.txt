@@ -1,0 +1,93 @@
+ÔùÅ List directory .
+  Ôöö 7 files found
+
+ÔùÅ Search (glob)
+  Ôöé "**/urlrewrite.config"
+  Ôöö 1 file found
+
+ÔùÅ Search (glob)
+  Ôöé "**/web.config"
+  Ôöö 1 file found
+
+ÔùÅ Search (glob)
+  Ôöé "**/Program.cs"
+  Ôöö 1 file found
+
+ÔùÅ Read urlrewrite.config
+  Ôöé CascadeHRPortal\IIS-Config\urlrewrite.config
+  Ôöö 101 lines read
+
+ÔùÅ Read web.config
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\web.config
+  Ôöö 36 lines read
+
+ÔùÅ Read Program.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+  Ôöö 55 lines read
+
+ÔùÅ Search (glob)
+  Ôöé "**/Middleware/**"
+  Ôöö No matches found
+
+Now I have a full picture of the rules and existing code. Let me implement all three changes.
+
+ÔùÅ Create Middleware directory (shell)
+  Ôöé New-Item -ItemType Directory -Path "C:\code\gbb\labs\appmodlab-iis-to-azure-
+  Ôöé app-service\CascadeHRPortal\CascadeHRPortal.Web\Middleware" -Force
+  Ôöö 4 lines...
+
+ÔùÅ Edit Program.cs +1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+
+ÔùÅ Edit web.config +1 -13
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\web.config
+
+ÔùÅ Edit Program.cs +3
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+
+ÔùÅ Create UrlRewriteMiddleware.cs +221
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Middleware\UrlRewriteMiddleware.cs
+
+Now let me verify the build compiles and review the final state of all changed files.
+
+ÔùÅ Build the project (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\CascadeHRPortal\Casca
+  Ôöé deHRPortal.Web && dotnet build --no-restore 2>&1 | Select-Object -Last 20
+  Ôöö 6 lines...
+
+The failure is a pre-existing restore issue (net6.0 target framework needs restore), not related to my code. Let me try with restore:
+
+ÔùÅ Restore and build (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\CascadeHRPortal\Casca
+  Ôöé deHRPortal.Web && dotnet restore 2>&1 | Select-Object -Last 5 && dotnet
+  Ôöé build 2>&1 | Select-Object -Last 10
+  Ôöö 14 lines...
+
+Build succeeded with **0 errors**. All warnings are pre-existing (net6.0 EOL, vulnerable package, controller naming). Let me verify the final state of the modified files:
+
+ÔùÅ Read web.config
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\web.config
+  Ôöö 24 lines read
+
+ÔùÅ Read Program.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+  Ôöö 59 lines read
+
+All changes are complete and the build succeeds. Here's a summary:
+
+**Created:** `Middleware/UrlRewriteMiddleware.cs` ÔÇö implements all 17+ IIS URL rewrite rules:
+- **Rules 1-6:** HTTPS redirect, legacy HR portal, API v1ÔåÆv2 rewrite, trailing slash removal, lowercase URLs, WWW removal
+- **Rules 7-13:** Legacy redirects for employee search, payslips, benefits, leave, timesheets, calendar, PDF reports
+- **Rule 14:** Mobile site redirect (302 temporary)
+- **Rule 15:** Intranet legacy path redirect
+- **Rules 16-17:** Payroll API & Document Service proxy placeholders (return 502 with TODO for YARP)
+- **HSTS:** Outbound `Strict-Transport-Security` header on HTTPS responses
+
+**Updated:** `Program.cs` ÔÇö registered `UseMiddleware<UrlRewriteMiddleware>()` before `UseRouting()`
+
+**Updated:** `web.config` ÔÇö removed `<rewrite>` section, kept aspNetCore handler and security config
+
+
+Changes   +226 -13
+Requests  3 Premium (1m 43s)
+Tokens    Ôåæ 254.6k ÔÇó Ôåô 5.5k ÔÇó 220.3k (cached)

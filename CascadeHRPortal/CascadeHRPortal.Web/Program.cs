@@ -1,4 +1,5 @@
 using CascadeHRPortal.Services;
+using CascadeHRPortal.Web.Middleware;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Server.IISIntegration;
 
@@ -40,6 +41,9 @@ app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// URL rewrite rules migrated from IIS urlrewrite.config
+app.UseMiddleware<UrlRewriteMiddleware>();
 
 app.UseRouting();
 

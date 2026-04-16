@@ -1,0 +1,113 @@
+ÔùÅ List directory .
+  Ôöö 6 files found
+
+ÔùÅ List directory CascadeHRPortal
+  Ôöö 5 files found
+
+ÔùÅ List directory CascadeHRPortal\IIS-Config
+  Ôöö 5 files found
+
+ÔùÅ List directory CascadeHRPortal\CascadeHRPortal.Web
+  Ôöö 9 files found
+
+ÔùÅ Read urlrewrite.config
+  Ôöé CascadeHRPortal\IIS-Config\urlrewrite.config
+  Ôöö 101 lines read
+
+ÔùÅ Read web.config
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\web.config
+  Ôöö 36 lines read
+
+ÔùÅ Read applicationHost.config
+  Ôöé CascadeHRPortal\IIS-Config\applicationHost.config
+  Ôöö 29 lines read
+
+ÔùÅ Read setup-iis.ps1
+  Ôöé CascadeHRPortal\IIS-Config\setup-iis.ps1
+  Ôöö 61 lines read
+
+ÔùÅ Read web.config.transform.prod
+  Ôöé CascadeHRPortal\IIS-Config\web.config.transform.prod
+  Ôöö 17 lines read
+
+ÔùÅ Read Program.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+  Ôöö 55 lines read
+
+ÔùÅ Read web.config.transform.staging
+  Ôöé CascadeHRPortal\IIS-Config\web.config.transform.staging
+  Ôöö 16 lines read
+
+ÔùÅ Read appsettings.json
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\appsettings.json
+  Ôöö 36 lines read
+
+ÔùÅ List directory CascadeHRPortal\CascadeHRPortal.Web\Controllers
+  Ôöö 7 files found
+
+Now I have all the configuration details. Let me check the project file and an existing controller for the pattern to follow.
+
+ÔùÅ Read CascadeHRPortal.Web.csproj
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+  Ôöö 22 lines read
+
+ÔùÅ Read HomeController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\HomeController.cs
+  Ôöö 32 lines read
+
+ÔùÅ Create docs directory (shell)
+  Ôöé New-Item -ItemType Directory -Path
+  Ôöé "C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\docs" -Force |
+  Ôöé Out-Null; Write-Host "done"
+  Ôöö 2 lines...
+
+ÔùÅ Create HealthController.cs +13
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\HealthController.cs
+
+ÔùÅ Create iis-migration-assessment.md +327
+  Ôöö docs\iis-migration-assessment.md
+
+Now let me verify the project builds successfully:
+
+ÔùÅ Build the project to verify changes (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\CascadeHRPortal &&
+  Ôöé dotnet build --no-restore CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+  Ôöé 2>&1 | Select-Object -Last 15
+  Ôöö 6 lines...
+
+The build failure is a pre-existing environment issue (net6.0 SDK not installed on this machine with .NET 10). Let me try with restore:
+
+ÔùÅ Check available .NET SDKs (shell)
+  Ôöé dotnet --list-sdks | Select-String "6\." 2>&1
+  Ôöö 1 line...
+
+The .NET 6 SDK isn't installed ÔÇö only .NET 10 is available. This is a pre-existing environment limitation, not related to my changes. The `HealthController.cs` follows correct ASP.NET Core 6 patterns matching the existing codebase conventions.
+
+Let me verify git status of the new files:
+
+ÔùÅ Check git status of changes (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service && git --no-pager
+  Ôöé diff --stat HEAD && echo "---" && git --no-pager status --short
+  Ôöö 5 lines...
+
+Both files are created and ready. Here's a summary:
+
+**Created 2 files:**
+
+1. **`docs/iis-migration-assessment.md`** ÔÇö Comprehensive audit covering all 8 categories:
+   - **17 URL rewrite rules** cataloged with migration strategies (middleware, YARP, drop)
+   - **Windows Auth** flagged as highest-risk (P0) ÔÇö migrate to Entra ID + EasyAuth
+   - **2 virtual directories** (UNC shares) ÔåÆ Azure Blob Storage or Azure Files
+   - **App pool settings** mapped to App Service equivalents
+   - **2 ARR proxy rules** ÔåÆ YARP or Azure API Management
+   - **2 config transforms** ÔåÆ App Service Configuration + Key Vault
+   - **Custom error pages** ÔÇö already portable, no changes needed
+   - **SSL/TLS** ÔÇö use App Service managed certs + HTTPS Only toggle
+   - Includes a **priority matrix** (P0ÔÇôP3) for migration planning
+
+2. **`CascadeHRPortal.Web/Controllers/HealthController.cs`** ÔÇö `/health` endpoint returning `"OK"`, marked `[AllowAnonymous]` to bypass Windows Auth, using `ControllerBase` (API-style) consistent with the project.
+
+
+Changes   +340 -0
+Requests  3 Premium (3m 2s)
+Tokens    Ôåæ 382.3k ÔÇó Ôåô 8.8k ÔÇó 311.5k (cached)

@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using CascadeHRPortal.Services;
 using CascadeHRPortal.Web.Middleware;
 using Microsoft.Identity.Web;
@@ -9,6 +10,10 @@ builder.Services.AddControllersWithViews();
 
 // Entra ID authentication via Microsoft Identity Web
 builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration);
+
+// Register Azure Blob Storage client
+builder.Services.AddSingleton(_ =>
+    new BlobServiceClient(builder.Configuration["AzureStorage:ConnectionString"]));
 
 // Register application services
 builder.Services.AddScoped<ILeaveService, LeaveService>();

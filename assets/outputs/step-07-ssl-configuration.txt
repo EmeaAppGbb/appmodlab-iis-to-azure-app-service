@@ -1,0 +1,130 @@
+ÔùÅ List directory infra
+  Ôöö 3 files found
+
+ÔùÅ Read main.bicep
+  Ôöé infra\main.bicep
+  Ôöö 165 lines read
+
+ÔùÅ Read parameters.json
+  Ôöé infra\parameters.json
+  Ôöö 18 lines read
+
+ÔùÅ List directory infra\modules
+  Ôöö 4 files found
+
+ÔùÅ Read app-service.bicep
+  Ôöé infra\modules\app-service.bicep
+  Ôöö 162 lines read
+
+Now I understand the current setup. The app-service.bicep already has `httpsOnly: true` and `minTlsVersion: '1.2'`. The main.bicep has an inline Key Vault resource. I need to:
+
+1. Create `infra/modules/key-vault.bicep` with Key Vault + self-signed cert + access policies
+2. Update `infra/main.bicep` to use the module instead of inline KV, wire certificate to app-service
+3. Update `infra/modules/app-service.bicep` to add SSL certificate binding
+4. Create `docs/ssl-migration-guide.md`
+
+Let me get a rubber-duck review on my plan before implementing.
+
+ÔùÅ Rubber-duck Review SSL migration plan
+  Ôöé Fetching web content https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificÔÇª
+  Ôöé   Ôöö Contents of https://learn.microsoft.com/en-us/azure/app-service/configur...
+  Ôöö Search (grep)
+      Ôöé "KeyVault__Endpoint|DefaultAzureCredential|SecretClient|CertificateClient|Az
+      Ôöé ure\.Security\.KeyVault" in *.{cs,json,md,bicep}
+      Ôöö 2 lines found
+
+Good feedback. Key adjustments: use declarative `Microsoft.KeyVault/vaults/certificates` (no deployment scripts), make custom domain/cert binding conditional, clearly label self-signed cert as dev/test only. Let me implement.
+
+ÔùÅ List directory docs
+  Ôöö 1 file found
+
+ÔùÅ Create key-vault.bicep +97
+  Ôöö infra\modules\key-vault.bicep
+
+Now update main.bicep to use the key-vault module instead of the inline resource:
+
+ÔùÅ Edit main.bicep -1
+  Ôöö infra\main.bicep
+
+ÔùÅ Edit main.bicep +7 -13
+  Ôöö infra\main.bicep
+
+Now update all references from the inline resource to module outputs:
+
+ÔùÅ Read main.bicep
+  Ôöé infra\main.bicep
+  Ôöö 158 lines read
+
+I need to fix several references that used inline resource syntax (`keyVault.properties.vaultUri`, `keyVault.id`, `keyVault.name`) to use module output syntax:
+
+ÔùÅ Edit main.bicep +1 -1
+  Ôöö infra\main.bicep
+
+ÔùÅ Edit main.bicep +23 -3
+  Ôöö infra\main.bicep
+
+ÔùÅ Edit main.bicep +2 -1
+  Ôöö infra\main.bicep
+
+Now update app-service.bicep to add Key Vault certificate reference and optional custom domain SSL binding:
+
+ÔùÅ Edit app-service.bicep +6
+  Ôöö infra\modules\app-service.bicep
+
+Now add the certificate and hostname binding resources at the end of app-service.bicep (before outputs):
+
+ÔùÅ Edit app-service.bicep +26
+  Ôöö infra\modules\app-service.bicep
+
+Now create the SSL migration guide:
+
+ÔùÅ Create ssl-migration-guide.md +293
+  Ôöö docs\ssl-migration-guide.md
+
+Now let me verify the final state of all modified files:
+
+ÔùÅ Read app-service.bicep
+  Ôöé infra\modules\app-service.bicep
+  Ôöö 194 lines read
+
+ÔùÅ Read main.bicep
+  Ôöé infra\main.bicep
+  Ôöö 179 lines read
+
+The SSL certificate resource needs proper Key Vault references. Let me also add params for the Key Vault ID to make the certificate binding work correctly:
+
+ÔùÅ Edit app-service.bicep +6
+  Ôöö infra\modules\app-service.bicep
+
+ÔùÅ Edit app-service.bicep +3 -3
+  Ôöö infra\modules\app-service.bicep
+
+ÔùÅ Edit app-service.bicep +2 -2
+  Ôöö infra\modules\app-service.bicep
+
+Let me verify the changes haven't broken anything by checking git diff:
+
+ÔùÅ Check git diff summary (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service && git --no-pager
+  Ôöé diff --stat
+  Ôöö 4 lines...
+
+ÔùÅ Check all changed/new files (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service && git --no-pager
+  Ôöé diff --stat -- "*.bicep" "*.md" && git --no-pager status --short
+  Ôöö 9 lines...
+
+All four deliverables are in place. Here's a summary of what was done:
+
+**Files created:**
+- `infra/modules/key-vault.bicep` ÔÇö Key Vault module with self-signed dev/test certificate, RBAC authorization, soft delete, and template deployment support
+- `docs/ssl-migration-guide.md` ÔÇö Comprehensive migration guide covering 3 approaches (managed certs, Key Vault certs, direct PFX upload), HTTPS enforcement, TLS config, and troubleshooting
+
+**Files modified:**
+- `infra/main.bicep` ÔÇö Replaced inline Key Vault resource with the new module; added Key Vault Certificate User RBAC role assignment alongside existing Secrets User role; wired certificate outputs
+- `infra/modules/app-service.bicep` ÔÇö Added optional params for Key Vault cert binding and custom domain; added conditional `Microsoft.Web/certificates` and `hostNameBindings` resources for SSL (only deploy when custom domain is provided); `httpsOnly: true` and `minTlsVersion: '1.2'` were already present
+
+
+Changes   +466 -24
+Requests  3 Premium (5m 0s)
+Tokens    Ôåæ 750.1k ÔÇó Ôåô 13.1k ÔÇó 679.4k (cached) ÔÇó 1.6k (reasoning)

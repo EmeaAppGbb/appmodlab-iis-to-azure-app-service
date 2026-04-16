@@ -14,7 +14,6 @@ param sqlAdminPassword string
 @description('Base name for resources')
 param baseName string = 'cascade-hr'
 
-var keyVaultName = '${baseName}-kv-${environmentName}'
 var appConfigName = '${baseName}-appconf-${environmentName}'
 
 // ──────────────────────────────────────────────
@@ -56,20 +55,14 @@ module sqlDatabase 'modules/sql-database.bicep' = {
 }
 
 // ──────────────────────────────────────────────
-// Azure Key Vault
+// Azure Key Vault (with self-signed dev certificate)
 // ──────────────────────────────────────────────
-resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' = {
-  name: keyVaultName
-  location: location
-  properties: {
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }
-    tenantId: subscription().tenantId
-    enableRbacAuthorization: true
-    enableSoftDelete: true
-    softDeleteRetentionInDays: 7
+module keyVault 'modules/key-vault.bicep' = {
+  name: 'key-vault-deployment'
+  params: {
+    location: location
+    environmentName: environmentName
+    baseName: baseName
   }
 }
 
@@ -98,7 +91,7 @@ module appService 'modules/app-service.bicep' = {
     sqlConnectionString: sqlDatabase.outputs.connectionString
     storageAccountName: storage.outputs.storageAccountName
     storageBlobEndpoint: storage.outputs.primaryBlobEndpoint
-    keyVaultUri: keyVault.properties.vaultUri
+    keyVaultUri: keyVault.outputs.keyVaultUri
     appConfigurationEndpoint: appConfiguration.properties.endpoint
   }
 }
@@ -108,14 +101,34 @@ module appService 'modules/app-service.bicep' = {
 // ──────────────────────────────────────────────
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
 
-resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, appService.outputs.appServicePrincipalId, keyVaultSecretsUserRoleId)
-  scope: keyVault
+resource kvSecretsRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keyVaultRef.id, appService.outputs.appServicePrincipalId, keyVaultSecretsUserRoleId)
+  scope: keyVaultRef
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultSecretsUserRoleId)
     principalId: appService.outputs.appServicePrincipalId
     principalType: 'ServicePrincipal'
   }
+}
+
+// ──────────────────────────────────────────────
+// RBAC: App Service managed identity → Key Vault Certificate User
+// ──────────────────────────────────────────────
+var keyVaultCertificateUserRoleId = 'db79e9a7-68ee-4b58-9aeb-b90e7c24fcba'
+
+resource kvCertificateRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keyVaultRef.id, appService.outputs.appServicePrincipalId, keyVaultCertificateUserRoleId)
+  scope: keyVaultRef
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultCertificateUserRoleId)
+    principalId: appService.outputs.appServicePrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+// Reference the Key Vault for RBAC scope
+resource keyVaultRef 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
+  name: keyVault.outputs.keyVaultName
 }
 
 // ──────────────────────────────────────────────
@@ -160,6 +173,7 @@ output appServiceDefaultHostName string = appService.outputs.appServiceDefaultHo
 output appServiceName string = appService.outputs.appServiceName
 output sqlServerFqdn string = sqlDatabase.outputs.sqlServerFqdn
 output storageAccountName string = storage.outputs.storageAccountName
-output keyVaultName string = keyVault.name
+output keyVaultName string = keyVault.outputs.keyVaultName
+output keyVaultCertSecretId string = keyVault.outputs.selfSignedCertSecretId
 output appConfigurationName string = appConfiguration.name
 output applicationInsightsName string = monitoring.outputs.applicationInsightsConnectionString

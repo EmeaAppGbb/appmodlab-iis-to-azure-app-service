@@ -28,6 +28,18 @@ param keyVaultUri string
 @description('App Configuration endpoint')
 param appConfigurationEndpoint string
 
+@description('Key Vault certificate secret ID for SSL binding (from Key Vault certificate)')
+param keyVaultCertSecretId string = ''
+
+@description('Key Vault resource ID for SSL certificate import')
+param keyVaultId string = ''
+
+@description('Key Vault certificate name for SSL binding')
+param keyVaultCertName string = ''
+
+@description('Custom domain name for SSL binding (leave empty to skip custom domain setup)')
+param customDomainName string = ''
+
 var appServicePlanName = '${baseName}-plan-${environmentName}'
 var appServiceName = '${baseName}-app-${environmentName}'
 
@@ -152,6 +164,32 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = {
         }
       ]
     }
+  }
+}
+
+// ──────────────────────────────────────────────
+// SSL Certificate from Key Vault (conditional on custom domain)
+// ──────────────────────────────────────────────
+resource sslCertificate 'Microsoft.Web/certificates@2022-09-01' = if (!empty(customDomainName) && !empty(keyVaultId) && !empty(keyVaultCertName)) {
+  name: '${appServiceName}-ssl-cert'
+  location: location
+  properties: {
+    keyVaultId: keyVaultId
+    keyVaultSecretName: keyVaultCertName
+    serverFarmId: appServicePlan.id
+    password: ''
+  }
+}
+
+// ──────────────────────────────────────────────
+// Custom domain hostname binding with SSL (conditional)
+// ──────────────────────────────────────────────
+resource customDomainBinding 'Microsoft.Web/sites/hostNameBindings@2022-09-01' = if (!empty(customDomainName)) {
+  parent: appService
+  name: customDomainName
+  properties: {
+    sslState: (!empty(keyVaultId) && !empty(keyVaultCertName)) ? 'SniEnabled' : 'Disabled'
+    thumbprint: (!empty(keyVaultId) && !empty(keyVaultCertName)) ? sslCertificate.properties.thumbprint : null
   }
 }
 

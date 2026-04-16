@@ -1,0 +1,101 @@
+ÔùÅ Search (glob)
+  Ôöé "**/Program.cs"
+  Ôöö 1 file found
+
+ÔùÅ Search (glob)
+  Ôöé "**/web.config"
+  Ôöö 1 file found
+
+ÔùÅ Search (glob)
+  Ôöé "**/appsettings.json"
+  Ôöö 1 file found
+
+ÔùÅ Search (glob)
+  Ôöé "**/*.csproj"
+  Ôöö 2 files found
+
+ÔùÅ Read appsettings.json
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\appsettings.json
+  Ôöö 46 lines read
+
+ÔùÅ Read Program.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+  Ôöö 63 lines read
+
+ÔùÅ Read CascadeHRPortal.Web.csproj
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+  Ôöö 21 lines read
+
+ÔùÅ Read web.config
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\web.config
+  Ôöö 17 lines read
+
+ÔùÅ Read CascadeHRPortal.Services.csproj
+  Ôöé CascadeHRPortal\CascadeHRPortal.Services\CascadeHRPortal.Services.csproj
+  Ôöö 17 lines read
+
+Now I have full context. Let me apply all changes in parallel.
+
+ÔùÅ Edit CascadeHRPortal.Web.csproj +2 -2
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+
+ÔùÅ Edit CascadeHRPortal.Services.csproj +1 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Services\CascadeHRPortal.Services.csproj
+
+ÔùÅ Edit Program.cs +3
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+
+ÔùÅ Edit appsettings.json +4
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\appsettings.json
+
+ÔùÅ Edit web.config +1 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\web.config
+
+Now create the docs directory and deployment checklist:
+
+ÔùÅ Create docs directory (shell)
+  Ôöé New-Item -ItemType Directory -Path
+  Ôöé "C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\docs" -Force |
+  Ôöé Out-Null; Write-Output "done"
+  Ôöö 2 lines...
+
+ÔùÅ Create deployment-checklist.md +74
+  Ôöö docs\deployment-checklist.md
+
+Let me verify the changes:
+
+ÔùÅ Read web.config
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\web.config
+  Ôöö 17 lines read
+
+ÔùÅ Read CascadeHRPortal.Web.csproj
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+  Ôöö 21 lines read
+
+ÔùÅ Read Program.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+  Ôöö L1:15 (15 lines read)
+
+ÔùÅ Read CascadeHRPortal.Services.csproj
+  Ôöé CascadeHRPortal\CascadeHRPortal.Services\CascadeHRPortal.Services.csproj
+  Ôöö 17 lines read
+
+ÔùÅ Read appsettings.json
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\appsettings.json
+  Ôöö L1:15 (15 lines read)
+
+All 6 changes are complete and verified:
+
+1. **Application Insights** ÔÇö Added `Microsoft.ApplicationInsights.AspNetCore 2.22.0` to Web.csproj and `builder.Services.AddApplicationInsightsTelemetry()` in Program.cs
+2. **appsettings.json** ÔÇö Added `ApplicationInsights` section with `InstrumentationKey` and `ConnectionString` placeholders
+3. **Target framework** ÔÇö Both `.csproj` files upgraded from `net6.0` ÔåÆ `net9.0`
+4. **web.config** ÔÇö Hosting model changed from `InProcess` ÔåÆ `OutOfProcess`
+5. **AspNetCoreHostingModel** ÔÇö Removed from Web.csproj (OutOfProcess now specified in web.config only)
+6. **docs/deployment-checklist.md** ÔÇö Created with sections covering Entra ID registration, Azure resources, connection strings, Key Vault secrets, deployment slots, and health checks
+
+No commit made as requested.
+
+
+Changes   +85 -4
+Requests  3 Premium (1m 15s)
+Tokens    Ôåæ 206.1k ÔÇó Ôåô 3.9k ÔÇó 176.9k (cached)

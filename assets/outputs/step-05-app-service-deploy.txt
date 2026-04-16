@@ -1,0 +1,55 @@
+ÔùÅ List directory .
+  Ôöö 7 files found
+
+ÔùÅ Create infra directories (shell)
+  Ôöé New-Item -ItemType Directory -Path
+  Ôöé "C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\infra\modules" -Force |
+  Ôöé Out-Null; Write-Output "done"
+  Ôöö 2 lines...
+
+Now I'll create all 6 files in parallel:
+
+ÔùÅ Create main.bicep +166
+  Ôöö infra\main.bicep
+
+ÔùÅ Create parameters.json +19
+  Ôöö infra\parameters.json
+
+ÔùÅ Create monitoring.bicep +38
+  Ôöö infra\modules\monitoring.bicep
+
+ÔùÅ Create storage.bicep +52
+  Ôöö infra\modules\storage.bicep
+
+ÔùÅ Create sql-database.bicep +59
+  Ôöö infra\modules\sql-database.bicep
+
+ÔùÅ Create app-service.bicep +163
+  Ôöö infra\modules\app-service.bicep
+
+Let me verify the structure looks correct:
+
+ÔùÅ List directory infra
+  Ôöö 3 files found
+
+All 6 Bicep infrastructure files have been created (not committed):
+
+| File | Resources |
+|------|-----------|
+| `infra/main.bicep` | Orchestrator ÔÇö deploys all modules + Key Vault, App Configuration, RBAC role assignments |
+| `infra/modules/app-service.bicep` | Linux S1 App Service Plan, App Service with system-assigned managed identity, staging slot, wired app settings & connection strings |
+| `infra/modules/sql-database.bicep` | Azure SQL Server + Database (S0), firewall rule for Azure services |
+| `infra/modules/storage.bicep` | Storage account with `hr-documents` and `payslips` blob containers |
+| `infra/modules/monitoring.bicep` | Application Insights + Log Analytics workspace |
+| `infra/parameters.json` | Parameter file with placeholders for region, environment, SQL credentials |
+
+Key design choices:
+- **Naming convention**: `cascade-hr-{resourcetype}-{env}` throughout
+- **Managed identity**: System-assigned on both production and staging slots
+- **RBAC**: Auto-grants Key Vault Secrets User, Storage Blob Data Contributor, and App Configuration Data Reader to the App Service identity
+- **Security**: HTTPS-only, TLS 1.2 minimum, no public blob access, FTPS disabled
+
+
+Changes   +497 -0
+Requests  3 Premium (1m 22s)
+Tokens    Ôåæ 141.2k ÔÇó Ôåô 5.6k ÔÇó 116.9k (cached)

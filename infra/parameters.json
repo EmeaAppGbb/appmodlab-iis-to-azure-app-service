@@ -13,6 +13,15 @@
     },
     "sqlAdminPassword": {
       "value": "<SQL_ADMIN_PASSWORD>"
+    },
+    "minInstanceCount": {
+      "value": 1
+    },
+    "maxInstanceCount": {
+      "value": 5
+    },
+    "defaultInstanceCount": {
+      "value": 2
     }
   }
 }

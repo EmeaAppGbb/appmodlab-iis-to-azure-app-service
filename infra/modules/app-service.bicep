@@ -198,3 +198,4 @@ output appServiceName string = appService.name
 output appServiceDefaultHostName string = appService.properties.defaultHostName
 output appServicePrincipalId string = appService.identity.principalId
 output stagingSlotPrincipalId string = stagingSlot.identity.principalId
+output appServicePlanId string = appServicePlan.id

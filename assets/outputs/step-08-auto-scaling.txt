@@ -1,0 +1,73 @@
+ÔùÅ List directory infra
+  Ôöö 3 files found
+
+ÔùÅ Read main.bicep
+  Ôöé infra\main.bicep
+  Ôöö 179 lines read
+
+ÔùÅ Read parameters.json
+  Ôöé infra\parameters.json
+  Ôöö 18 lines read
+
+ÔùÅ List directory infra\modules
+  Ôöö 5 files found
+
+ÔùÅ Read app-service.bicep
+  Ôöé infra\modules\app-service.bicep
+  Ôöö 200 lines read
+
+Now I have the full picture. I'll create the autoscale module, add the plan ID output to app-service.bicep, and wire everything together.
+
+ÔùÅ Create autoscale.bicep +104
+  Ôöö infra\modules\autoscale.bicep
+
+ÔùÅ Edit app-service.bicep +1
+  Ôöö infra\modules\app-service.bicep
+
+Now update `main.bicep` to include the autoscale module and `parameters.json` with autoscale parameters:
+
+ÔùÅ Edit main.bicep +16
+  Ôöö infra\main.bicep
+
+ÔùÅ Edit parameters.json +9
+  Ôöö infra\parameters.json
+
+ÔùÅ Edit main.bicep +9
+  Ôöö infra\main.bicep
+
+Let me verify the final state of all three files:
+
+ÔùÅ Read autoscale.bicep
+  Ôöé infra\modules\autoscale.bicep
+  Ôöö 103 lines read
+
+ÔùÅ Read main.bicep
+  Ôöé infra\main.bicep
+  Ôöö L1:30 (30 lines read)
+
+ÔùÅ Read parameters.json
+  Ôöé infra\parameters.json
+  Ôöö 27 lines read
+
+ÔùÅ Read main.bicep
+  Ôöé infra\main.bicep
+  Ôöö L95:125 (31 lines read)
+
+All three files are in place. Here's what was done:
+
+1. **Created `infra/modules/autoscale.bicep`** ÔÇö `Microsoft.Insights/autoscalesettings` resource with:
+   - **Scale-out**: CPU > 70% for 10 min ÔåÆ +1 instance, 5 min cooldown
+   - **Scale-in**: CPU < 30% for 10 min ÔåÆ ÔêÆ1 instance, 5 min cooldown
+   - **Scale-out**: HTTP requests > 100 for 5 min ÔåÆ +1 instance, 5 min cooldown
+   - Capacity: min 1, default 2, max 5 instances
+
+2. **Updated `infra/modules/app-service.bicep`** ÔÇö added `appServicePlanId` output
+
+3. **Updated `infra/main.bicep`** ÔÇö added autoscale params (`minInstanceCount`, `maxInstanceCount`, `defaultInstanceCount`) and the autoscale module invocation
+
+4. **Updated `infra/parameters.json`** ÔÇö added the three autoscale parameters with default values
+
+
+Changes   +139 -0
+Requests  3 Premium (1m 4s)
+Tokens    Ôåæ 212.9k ÔÇó Ôåô 3.3k ÔÇó 182.0k (cached)

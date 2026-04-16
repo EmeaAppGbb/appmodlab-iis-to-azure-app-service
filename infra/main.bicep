@@ -14,6 +14,15 @@ param sqlAdminPassword string
 @description('Base name for resources')
 param baseName string = 'cascade-hr'
 
+@description('Minimum number of App Service instances for autoscale')
+param minInstanceCount int = 1
+
+@description('Maximum number of App Service instances for autoscale')
+param maxInstanceCount int = 5
+
+@description('Default number of App Service instances for autoscale')
+param defaultInstanceCount int = 2
+
 var appConfigName = '${baseName}-appconf-${environmentName}'
 
 // ──────────────────────────────────────────────
@@ -93,6 +102,22 @@ module appService 'modules/app-service.bicep' = {
     storageBlobEndpoint: storage.outputs.primaryBlobEndpoint
     keyVaultUri: keyVault.outputs.keyVaultUri
     appConfigurationEndpoint: appConfiguration.properties.endpoint
+  }
+}
+
+// ──────────────────────────────────────────────
+// Auto-Scaling for App Service Plan
+// ──────────────────────────────────────────────
+module autoscale 'modules/autoscale.bicep' = {
+  name: 'autoscale-deployment'
+  params: {
+    location: location
+    environmentName: environmentName
+    baseName: baseName
+    appServicePlanId: appService.outputs.appServicePlanId
+    minInstanceCount: minInstanceCount
+    maxInstanceCount: maxInstanceCount
+    defaultInstanceCount: defaultInstanceCount
   }
 }
 

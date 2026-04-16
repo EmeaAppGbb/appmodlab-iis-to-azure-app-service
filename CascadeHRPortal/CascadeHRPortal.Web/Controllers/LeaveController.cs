@@ -13,7 +13,8 @@ public class LeaveController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var requests = await _leaveService.GetEmployeeLeaveRequestsAsync(User.Identity?.Name ?? "");
+        var username = User.FindFirst("preferred_username")?.Value ?? "";
+        var requests = await _leaveService.GetEmployeeLeaveRequestsAsync(username);
         return View(requests);
     }
 
@@ -23,7 +24,7 @@ public class LeaveController : Controller
     public async Task<IActionResult> Request(LeaveRequestModel model)
     {
         if (!ModelState.IsValid) return View(model);
-        model.EmployeeUsername = User.Identity?.Name ?? "";
+        model.EmployeeUsername = User.FindFirst("preferred_username")?.Value ?? "";
         var result = await _leaveService.SubmitLeaveRequestAsync(model);
         if (result.Success) {
             TempData["SuccessMessage"] = "Leave request submitted";

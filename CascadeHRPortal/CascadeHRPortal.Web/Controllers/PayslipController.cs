@@ -17,13 +17,14 @@ public class PayslipController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var payslips = await _payrollService.GetEmployeePayslipsAsync(User.Identity?.Name ?? "");
+        var username = User.FindFirst("preferred_username")?.Value ?? "";
+        var payslips = await _payrollService.GetEmployeePayslipsAsync(username);
         return View(payslips);
     }
 
     public async Task<IActionResult> Download(int id)
     {
-        var doc = await _documentService.GetPayslipDocumentAsync(id, User.Identity?.Name ?? "");
+        var doc = await _documentService.GetPayslipDocumentAsync(id, User.FindFirst("preferred_username")?.Value ?? "");
         return doc == null ? NotFound() : File(doc.Content, "application/pdf", doc.FileName);
     }
 }

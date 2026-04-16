@@ -1,15 +1,14 @@
 using CascadeHRPortal.Services;
 using CascadeHRPortal.Web.Middleware;
-using Microsoft.AspNetCore.Authentication.Negotiate;
-using Microsoft.AspNetCore.Server.IISIntegration;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Windows Authentication via IIS
-builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
+// Entra ID authentication via Microsoft Identity Web
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration);
 
 // Register application services
 builder.Services.AddScoped<ILeaveService, LeaveService>();

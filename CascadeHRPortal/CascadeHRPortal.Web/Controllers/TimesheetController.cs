@@ -13,7 +13,8 @@ public class TimesheetController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var timesheets = await _timesheetService.GetEmployeeTimesheetsAsync(User.Identity?.Name ?? "");
+        var username = User.FindFirst("preferred_username")?.Value ?? "";
+        var timesheets = await _timesheetService.GetEmployeeTimesheetsAsync(username);
         return View(timesheets);
     }
 

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,9 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        ViewBag.Username = User.Identity?.Name ?? "Unknown User";
+        ViewBag.Username = User.FindFirst("preferred_username")?.Value
+                        ?? User.FindFirst("name")?.Value
+                        ?? "Unknown User";
         ViewBag.WelcomeMessage = $"Welcome to Cascade HR Portal, {ViewBag.Username}";
         return View();
     }

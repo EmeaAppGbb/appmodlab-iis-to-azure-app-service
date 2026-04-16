@@ -1,0 +1,138 @@
+ÔùÅ List directory CascadeHRPortal
+  Ôöö 5 files found
+
+ÔùÅ Search (glob)
+  Ôöé "CascadeHRPortal\CascadeHRPortal.Web\Controllers\*.cs"
+  Ôöö No matches found
+
+ÔùÅ List directory CascadeHRPortal\CascadeHRPortal.Web
+  Ôöö 10 files found
+
+ÔùÅ Search (glob)
+  Ôöé "CascadeHRPortal/CascadeHRPortal.Web/Controllers/*.cs"
+  Ôöö 8 files found
+
+ÔùÅ Read HomeController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\HomeController.cs
+  Ôöö 32 lines read
+
+ÔùÅ Read ProfileController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\ProfileController.cs
+  Ôöö 20 lines read
+
+ÔùÅ Read TimesheetController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\TimesheetController.cs
+  Ôöö 21 lines read
+
+ÔùÅ Read DirectoryController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\DirectoryController.cs
+  Ôöö 11 lines read
+
+ÔùÅ Read BenefitsController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\BenefitsController.cs
+  Ôöö 11 lines read
+
+ÔùÅ Read LeaveController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\LeaveController.cs
+  Ôöö 35 lines read
+
+ÔùÅ Read PayslipController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\PayslipController.cs
+  Ôöö 29 lines read
+
+ÔùÅ Read HealthController.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Controllers\HealthController.cs
+  Ôöö 12 lines read
+
+ÔùÅ Read Program.cs
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+  Ôöö 59 lines read
+
+ÔùÅ Read web.config
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\web.config
+  Ôöö 24 lines read
+
+ÔùÅ Read appsettings.json
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\appsettings.json
+  Ôöö 36 lines read
+
+ÔùÅ Read CascadeHRPortal.Web.csproj
+  Ôöé CascadeHRPortal\CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+  Ôöö 22 lines read
+
+Now I have a complete picture. Let me make all the changes in parallel.
+
+ÔùÅ Edit web.config +1 -8
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\web.config
+
+ÔùÅ Edit appsettings.json +7
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\appsettings.json
+
+ÔùÅ Edit CascadeHRPortal.Web.csproj +1 -3
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\CascadeHRPortal.Web.csproj
+
+ÔùÅ Edit HomeController.cs +3 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\HomeController.cs
+
+ÔùÅ Edit PayslipController.cs +2 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\PayslipController.cs
+
+ÔùÅ Edit Program.cs +3 -4
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Program.cs
+
+ÔùÅ Edit TimesheetController.cs +2 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\TimesheetController.cs
+
+ÔùÅ Edit ProfileController.cs +5 -3
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\ProfileController.cs
+
+ÔùÅ Edit LeaveController.cs +2 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\LeaveController.cs
+
+ÔùÅ Edit HomeController.cs +1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\HomeController.cs
+
+ÔùÅ Edit PayslipController.cs +1 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\PayslipController.cs
+
+ÔùÅ Edit LeaveController.cs +1 -1
+  Ôöö CascadeHRPortal\CascadeHRPortal.Web\Controllers\LeaveController.cs
+
+Now let me verify the changes and build:
+
+ÔùÅ Build the solution (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\CascadeHRPortal &&
+  Ôöé dotnet build --no-restore 2>&1 | Select-Object -Last 20
+  Ôöö 15 lines...
+
+Need to restore packages first since we changed the package references:
+
+ÔùÅ Restore NuGet packages (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\CascadeHRPortal &&
+  Ôöé dotnet restore 2>&1 | Select-Object -Last 10
+  Ôöö 7 lines...
+
+ÔùÅ Build after restore (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service\CascadeHRPortal &&
+  Ôöé dotnet build --no-restore 2>&1 | Select-Object -Last 10
+  Ôöö 8 lines...
+
+Build succeeded. Let me verify the final state of the key files:
+
+ÔùÅ Show changed files summary (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-iis-to-azure-app-service && git --no-pager
+  Ôöé diff --stat
+  Ôöö 11 lines...
+
+All changes applied and build succeeds (0 errors). Here's a summary of what was done:
+
+1. **Program.cs** ÔÇö Replaced `IISDefaults.AuthenticationScheme` with `AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)`, using `Microsoft.Identity.Web`
+2. **appsettings.json** ÔÇö Added `AzureAd` section with placeholders for Instance, Domain, TenantId, ClientId, CallbackPath
+3. **CascadeHRPortal.Web.csproj** ÔÇö Added `Microsoft.Identity.Web 2.17.0`, removed `Microsoft.AspNetCore.Authentication.Negotiate`, `System.DirectoryServices`, and `System.DirectoryServices.AccountManagement`
+4. **web.config** ÔÇö Removed the `<security>/<authentication>` section (Windows Auth + anonymous auth config)
+5. **Controllers** ÔÇö Updated all 5 controllers using `User.Identity?.Name` to use claims-based identity (`User.FindFirst("preferred_username")`) instead of Windows identity. ProfileController now also reads `GivenName`, `Surname`, and `Email` claims.
+
+
+Changes   +29 -24
+Requests  3 Premium (2m 0s)
+Tokens    Ôåæ 323.4k ÔÇó Ôåô 6.0k ÔÇó 281.7k (cached)
